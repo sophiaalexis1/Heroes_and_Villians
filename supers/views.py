@@ -11,7 +11,13 @@ from .models import Super
 def supers_list(request):
     
     if request.method == 'GET':
+        supertype = request.query_params.get('super_type')
+        print(supertype)
         supers = Super.objects.all()
+        
+        if supertype:
+            supers = supers.filter(super_type__type=supertype)
+        
         serializer = SuperSerializer(supers, many=True)
         return Response(serializer.data)
     
