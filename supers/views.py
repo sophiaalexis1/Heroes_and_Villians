@@ -21,4 +21,10 @@ def supers_list(request):
         serializer = SuperSerializer(supers, many=True)
         return Response(serializer.data)
     
+    elif request.method == 'POST':
+        serializer = SuperSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
     
