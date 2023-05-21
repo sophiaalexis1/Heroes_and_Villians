@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import SuperSerializer
 from .models import Super
+from super_types.models import SuperType
+from super_types.serializers import SuperTypeSerializer
 
 # Create your views here.
 
@@ -11,15 +13,24 @@ from .models import Super
 def supers_list(request):
     
     if request.method == 'GET':
+        # super_types = SuperType.objects.all()
         supertype = request.query_params.get('super_type')
-        print(supertype)
-        supers = Super.objects.all()
-        
+        super = Super.objects.all()
         if supertype:
-            supers = supers.filter(super_type__type=supertype)
+            supers = super.filter(super_type__type=supertype)
+            serializer = SuperSerializer(supers, many=True)
+            return Response(serializer.data)
+        else:
+            heroes = Super.objects.filter(super_type_id = 1)
+            heroes_serializer = SuperSerializer(heroes, many=True)
+            villians = Super.objects.filter(super_type_id = 2)
+            villians_serializer = SuperSerializer(villians, many=True)
+            custom_response = {
+            "Heroes": heroes_serializer.data,
+            "Villians": villians_serializer.data,
+        }
+        return Response(custom_response)
         
-        serializer = SuperSerializer(supers, many=True)
-        return Response(serializer.data)
     
     elif request.method == 'POST':
         serializer = SuperSerializer(data=request.data)
